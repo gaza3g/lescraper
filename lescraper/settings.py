@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 """
 Django settings for lescraper project.
 
@@ -10,7 +12,16 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from celery.schedules import crontab
+from datetime import timedelta
+import djcelery
+
+djcelery.setup_loader()
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+# Celery settings
+
+BROKER_URL = 'amqp://guest:guest@localhost//'
 
 
 # Quick-start development settings - unsuitable for production
@@ -36,6 +47,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'djcelery',
     'jobapplications',
 )
 
@@ -82,3 +94,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CRAWL_PAGES = 100
+
+
+CELERYBEAT_SCHEDULE = {
+    "runs-every-30-seconds": {
+        "task": "jobapplications.tasks.crawl",
+        "schedule": timedelta(seconds=120),
+        "args": ()
+    },
+}
