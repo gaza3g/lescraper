@@ -41,3 +41,10 @@ class JobStore(models.Model):
 	description = models.CharField(max_length=255)
 	url = models.CharField(max_length=255)
 	post_date = models.DateTimeField('date posted')
+
+class CrawlTask(models.Model):
+
+	name = models.CharField(max_length=255)
+	start_date = models.DateTimeField('start date')
+	end_date = models.DateTimeField('end date')
+	output = models.CharField(max_length=255)

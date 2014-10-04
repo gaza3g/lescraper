@@ -8,6 +8,7 @@ import requests
 import sys
 import csv
 import time
+from django.utils import timezone
 import types
 import collections
 import parsedatetime
@@ -18,7 +19,7 @@ import json
 import datetime
 import html
 
-from jobapplications.models import JobStore, Company
+from jobapplications.models import JobStore, Company, CrawlTask
 from jobapplications.models import Job as JobModel
 
 class Command(BaseCommand):
@@ -36,6 +37,8 @@ class Command(BaseCommand):
 
 
 	def handle(self, *args, **options):
+
+		start_date  = timezone.now()
 
 		result = self.crawl()
 
@@ -101,6 +104,13 @@ class Command(BaseCommand):
 
 		new_job_count = int(JobModel.objects.count() - initial_job_count)
 		new_companies_count = new_companies.count()
+
+		c = CrawlTask(name="indeedcrawler", 
+						start_date=start_date, 
+							end_date=timezone.now(), 
+								output="%s | %s" % (new_job_count, new_companies_count)
+			)
+		c.save()
 
 		return "%s | %s" % (new_job_count, new_companies_count)
 
