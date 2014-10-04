@@ -14,6 +14,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 from celery.schedules import crontab
 from datetime import timedelta
+import psycopg2
 import djcelery
 
 djcelery.setup_loader()
@@ -69,10 +70,22 @@ WSGI_APPLICATION = 'lescraper.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'lescraper',                      # Or path to database file if using sqlite3.
+        # The following settings are not used with sqlite3:
+        'USER': 'lescraper_user',
+        'PASSWORD': 'lepassword',
+        'HOST': '192.168.1.120',                      # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
+        'PORT': '',                      # Set to empty string for default.
     }
 }
 
@@ -95,13 +108,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-CRAWL_PAGES = 100
-
+CRAWL_PAGES = 100 #1000
+CRAWL_EACH_PAGE_DELAY = 2
 
 CELERYBEAT_SCHEDULE = {
     "runs-every-30-seconds": {
         "task": "jobapplications.tasks.crawl",
-        "schedule": timedelta(seconds=120),
+        "schedule": timedelta(seconds=40),
         "args": ()
     },
 }

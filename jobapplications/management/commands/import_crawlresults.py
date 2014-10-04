@@ -99,6 +99,11 @@ class Command(BaseCommand):
 					post_date=js.post_date
 				)
 
+		new_job_count = int(JobModel.objects.count() - initial_job_count)
+		new_companies_count = new_companies.count()
+
+		return "%s | %s" % (new_job_count, new_companies_count)
+
 		# self.stdout.write('%s new jobs added.' % int(JobModel.objects.count() - initial_job_count))
 		# self.stdout.write('%s new companies added.' % new_companies.count())
 
@@ -122,7 +127,7 @@ class Command(BaseCommand):
 			page.close()
 			self.page_no = self.page_no + 10
 
-			time.sleep(2)
+			time.sleep(settings.CRAWL_EACH_PAGE_DELAY)
 
 		return results
 
